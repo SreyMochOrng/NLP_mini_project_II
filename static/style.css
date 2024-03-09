@@ -1,0 +1,157 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+
+}
+
+.container{
+    background-color: aliceblue;
+    padding: 20px;
+    height: 100vh;
+    align-items: center;
+}
+
+.abox, .abox3{
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    width: 70%;
+    display: flex;
+    justify-content: center;
+}
+
+
+.box {
+    width: 48%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.subBox {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.box1 {
+    border-right: 1px solid #ccc;
+    height: fit-height;
+}
+#textInput{
+    height:250px;
+}
+
+.box2 {
+    padding-left: 40px;
+}
+.box3{
+    height: 0px;
+    width: 0px;
+    padding: 100px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: rgb(10, 134, 206);
+}
+
+label {
+    font-size: 20px;
+    font-weight: 600;
+    color: rgb(92, 91, 91);
+
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-right: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+    margin-right: 40px;
+}
+
+button {
+    width: 160px;
+    height: 40px;
+    padding: 10px;
+    background-color: rgb(0, 153, 255);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+
+}
+
+button:hover {
+    background-color: rgb(84, 177, 235);
+}
+
+#results {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+
+.confidence {
+    text-align: start;
+    display: inline-block;
+    width: 50%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+
+.tag .confidence {
+    text-align: start;
+}
+
+#word_count{
+    color: rgb(6, 144, 236);
+    font-size: large;
+    font-weight: bold;
+}
+
+.True,
+.Positive{
+    color: green;
+    font-size: large;
+    font-weight: bold;
+}
+
+.False,
+.Negative{
+    color: red;
+    font-size: large;
+    font-weight: bold;
+}
+
+.resultContainer {
+    padding-right: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.divider {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #dfdfdf;
+}
