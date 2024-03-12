@@ -77,7 +77,7 @@ def pos_count(content):
 
 # count negative words
 def neg_count(content):
-    with open("./data/negative-words.txt", , encoding='latin-1') as f:
+    with open("./data/negative-words.txt",encoding='latin-1') as f:
         temp_neg_words = f.readlines()
         f.close()
     negative_words = [removeNewline(word) for word in temp_neg_words]
