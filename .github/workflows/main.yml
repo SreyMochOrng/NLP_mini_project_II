@@ -46,4 +46,4 @@ jobs:
                 docker pull raychannudam/sentimental-analysis-flask:latest
                 docker stop flask_app || true
                 docker rm flask_app || true
-                docker run -d -p 8080:80 --name flask_app raychannudam/sentimental-analysis-flask:latest
+                docker run -d -p 5000:5000 --name flask_app raychannudam/sentimental-analysis-flask:latest
