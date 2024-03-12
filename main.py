@@ -1,20 +1,12 @@
+import math
 import tensorflow as tf
-from flask import Flask, request, render_template, jsonify
-from pydantic import BaseModel
-from preprocessing import feature_engineering, preprocessing_text
-from keras.layers.experimental.preprocessing import TextVectorization
+from flask import Flask, request, render_template
+from utils import count_pos, count_neg, count_chars, count_words, count_capital_chars, count_stopwords, count_unique_words, count_word_no, count_pronoun, count_exclaimation, preprocess_sentence
 import numpy as np
+import pandas as pd
 import pickle
 
 app = Flask(__name__, static_url_path='/static')
-
-class TextAnalytic(BaseModel):
-    text: str
-
-# Load the vectorizer
-vectorizer_config = pickle.load(open('vectorizer.pkl', 'rb'))
-vectorizer = TextVectorization.from_config(vectorizer_config['config'])
-vectorizer.set_weights(vectorizer_config['weights'])
 
 @app.route('/')
 def home():
@@ -23,42 +15,72 @@ def home():
 @app.route('/predict/', methods=['POST'])
 def predict():
     text = request.form['textInput']
-    label, pronount_count, is_contain_no, is_contain_exclamation, positive_word_count, negative_word_count= make_prediction(text)
 
-    return render_template('index.html', label = label, pronount_count = pronount_count, is_contain_no = is_contain_no, is_contain_exclamation=is_contain_exclamation, positive_word_count= positive_word_count, negative_word_count= negative_word_count, input_text=text)
+    label,pos_word_count,neg_word_count,word_no,exclaimation = text_classify(text=text)
+    
+    return render_template('index.html', label = label, is_contain_no = word_no, is_contain_exclamation=exclaimation, positive_word_count= pos_word_count, negative_word_count= neg_word_count, input_text=text)
 
-LOADED_MODEL = tf.keras.models.load_model('sentimental.h5')
 
-def text_vectorize(text):
-    cleaned_text = preprocessing_text(text)
-    from_file = pickle.load(open("vectorizer.pkl", "rb"))
-    vectorizer = TextVectorization.from_config(from_file['config'])
-    vectorizer.set_weights(from_file['weights'])
-    text = vectorizer([cleaned_text])
-    return text
+model = tf.keras.models.load_model('models/model')
 
-def make_prediction(text):
-    X_text = text_vectorize(text)
-    X_numerical = feature_engineering(text)
+with open('models/encoder', 'rb') as file:
+    encoder = pickle.load(file)
 
-    pronoun_count = int(X_numerical[0][5])
-    positive_word_count = int(X_numerical[0][0])
-    negative_word_count = int(X_numerical[0][1])
-    is_contain_no = bool(X_numerical[0][2])
-    is_contain_exlamaition = bool(X_numerical[0][6])
+def text_classify(text):
+    
+    data = []
+    data.append(text)
 
-    # X_numerical = np.pad(X_numerical, ((0, 0), (0, 2)), 'constant', constant_values=(0, 0))
 
-    result = LOADED_MODEL.predict([X_text, X_numerical])
-    result = np.round(result[0][0], 5)
+    numerical_columns = ["positive_word_count", 
+                     "negative_word_count", 
+                     "char_count", 
+                     "word_count", 
+                     "capital_char_count", 
+                     "stopword_count", 
+                     "unique_word_count", 
+                     "pronounce_count"]
+    
 
-    if(result > 0.5):
-        label = 'Positive'
+    test_data = pd.DataFrame(data, columns=['reviews'])
+
+    test_data['positive_word_count'] = test_data['reviews'].apply(count_pos)
+    test_data['negative_word_count'] = test_data['reviews'].apply(count_neg)
+    test_data['char_count'] = test_data["reviews"].apply(count_chars)
+    test_data['word_count'] = test_data["reviews"].apply(count_words)
+    test_data['capital_char_count'] = test_data["reviews"].apply(count_capital_chars)
+    test_data['stopword_count'] = test_data["reviews"].apply(count_stopwords)
+    test_data['unique_word_count'] = test_data["reviews"].apply(count_unique_words)
+    test_data['word_no'] = test_data['reviews'].apply(count_word_no)
+    test_data['pronounce_count'] = test_data['reviews'].apply(count_pronoun)
+    test_data['exclaimation'] = test_data['reviews'].apply(count_exclaimation)
+
+    test_data['cleaned_reviews'] = test_data['reviews'].apply(preprocess_sentence)
+    enc_data = pd.DataFrame(encoder.transform( 
+    test_data[['word_no', 'exclaimation']]).toarray()) 
+
+    # Merge with main 
+    test_data = test_data.join(enc_data)
+    pos_word_count = test_data['positive_word_count'].sum()
+    neg_word_count = test_data['negative_word_count'].sum()
+    word_no = test_data['word_no'].sum() == 1
+    exclaimation = test_data['exclaimation'].sum() == 1
+    print(word_no, exclaimation)
+    test_data.drop(columns=["word_no", "exclaimation"], inplace=True)
+
+    for header in numerical_columns:
+        test_data[header] = test_data[header].apply(lambda x: math.log(x+1))
+        
+    y_predicted = model.predict([test_data.cleaned_reviews,test_data.drop(columns=['cleaned_reviews', 'reviews'])])
+
+    print('y_predicted', y_predicted)
+    y_predict_norm = np.where(y_predicted>=0.5,1,0)
+    if(y_predict_norm[0][0] == 1):
+        label = "Positive"
     else:
-        label = 'Negative'
-
-    return label, pronoun_count, is_contain_no, is_contain_exlamaition, positive_word_count, negative_word_count
-
+        label = "Negative"
+    
+    return label,pos_word_count,neg_word_count,word_no,exclaimation
 
 if __name__ == "__main__":
     app.run(debug=True)
