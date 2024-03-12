@@ -57,7 +57,7 @@ def removeStopwords(content):
 
 # remove common
 def removeCommon(content):
-    with open("./data/common-word.txt", "r") as f:
+    with open("./data/common_word.txt", "r") as f:
         temp_common_words = f.readlines()
         f.close()
     common_words = [removeNewline(word) for word in temp_common_words]
@@ -77,7 +77,7 @@ def pos_count(content):
 
 # count negative words
 def neg_count(content):
-    with open("./data/negative-words.txt",encoding='latin-1') as f:
+    with open("./data/negative-words.txt", encoding='latin-1') as f:
         temp_neg_words = f.readlines()
         f.close()
     negative_words = [removeNewline(word) for word in temp_neg_words]
@@ -90,6 +90,14 @@ def isContainNo(content):
 # check if contain '!'
 def isContainExclamation(content):
     return 1 if '!' in content else 0
+
+# check if contain not 
+def isContainNot(content):
+    return 1 if 'not' in content.split() else 0
+
+# check if contain but
+def isContainBut(content):
+    return 1 if 'but' in content.split() else 0
 
 # check if contain pronouns
 def pron_count(content):
@@ -116,6 +124,8 @@ def feature_engineering(content):
         pos_count(content),
         neg_count(content),
         isContainNo(content),
+        isContainNot(content),
+        isContainBut(content),
         pron_count(content),
         isContainExclamation(content),
         getLength(content)
