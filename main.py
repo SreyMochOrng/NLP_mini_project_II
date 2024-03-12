@@ -45,9 +45,9 @@ def make_prediction(text):
     positive_word_count = int(X_numerical[0][0])
     negative_word_count = int(X_numerical[0][1])
     is_contain_no = bool(X_numerical[0][2])
-    is_contain_exlamaition = bool(X_numerical[0][4])
+    is_contain_exlamaition = bool(X_numerical[0][6])
 
-    X_numerical = np.pad(X_numerical, ((0, 0), (0, 2)), 'constant', constant_values=(0, 0))
+    # X_numerical = np.pad(X_numerical, ((0, 0), (0, 2)), 'constant', constant_values=(0, 0))
 
     result = LOADED_MODEL.predict([X_text, X_numerical])
     result = np.round(result[0][0], 5)
