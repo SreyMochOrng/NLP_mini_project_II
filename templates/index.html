@@ -6,6 +6,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Classification</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .spinner {
+            border: 2px solid #f3f3f3; /* Light grey */
+            border-top: 2px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            margin-right: 5px;
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        function setLoading() {
+            document.getElementById("spinner").style.display = "inline-block"; // Show spinner
+            document.getElementById("classifyText").style.display = "none"; // Hide text
+            document.getElementById("classifyBtn").disabled = true;
+        }
+
+        function unsetLoading() {
+            document.getElementById("spinner").style.display = "none"; // Hide spinner
+            document.getElementById("classifyText").style.display = "inline-block"; // Show text
+            document.getElementById("classifyBtn").disabled = false;
+        }
+    </script>
 </head>
 
 <body>
@@ -13,11 +47,14 @@
         <h1>Text Classification</h1>
         <div class="abox">
             <div class="box box1">
-                <form id="classifyForm" action="{{ url_for('predict')}}" method="post">
+                <form id="classifyForm" action="{{ url_for('predict')}}" method="post" onsubmit="setLoading()">
                     <label for="textInput">Test with your own text</label><br><br>
                     <textarea type="text" id="textInput" name="textInput"
                         required="required">{{input_text}}</textarea><br>
-                    <button type="submit" id="classifyBtn">Classify Text</button>
+                    <button type="submit" id="classifyBtn">
+                        <span id="classifyText">Classify Text</span>
+                        <span id="spinner" class="spinner"></span>
+                    </button>
                 </form>
             </div>
             <div class="box box2">
