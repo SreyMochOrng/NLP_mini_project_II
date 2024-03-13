@@ -1,6 +1,6 @@
 flask
 numpy
-pandas
 nltk
 pydantic
 tensorflow
+pandas
