@@ -32,7 +32,7 @@ def count_neg(review):
     return sum(word in review for word in negative_words)
 
 def count_word_no(review):
-    return (1 if "no" in review.lower() else 0)
+    return (1 if "no" in review.lower().split() else 0)
 
 def count_pronoun(review):
     return sum(word in ["i", "me", "my", "you", "your"] for word in review.lower().split())
