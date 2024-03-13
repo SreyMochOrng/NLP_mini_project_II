@@ -1,6 +1,7 @@
 flask
 numpy
-nltk
-pydantic
 tensorflow
 pandas
+scikit-learn
+nltk
+pydantic
