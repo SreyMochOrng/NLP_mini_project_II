@@ -1,5 +1,6 @@
 flask
 numpy
 tensorflow
+pandas
 nltk
 pydantic
